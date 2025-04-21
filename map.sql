@@ -222,3 +222,33 @@ FROM maps.track_nodes tn
 JOIN track.switches s USING (node_id)
 JOIN maps.maps m USING (map_id)
 LEFT JOIN maps.switch_styles ss USING (style_id,  switch_type);
+
+CREATE VIEW maps.combined_reentry_points AS
+SELECT
+    encode((rp.reentry_id::text || tn.map_id::text)::bytea, 'base64') as crp_id,
+    tn.map_id AS map_id,
+    tn.node_id AS node_id,
+    reentry_id,
+    tn.geom AS geom,
+    degrees(st_azimuth(tn.geom::geography, st_lineinterpolatepoint(ctf.geom, 0.5)::geography)) AS rotation
+FROM maps.track_nodes tn
+JOIN track.reentry_points rp USING (node_id)
+JOIN maps.combined_track_fragments ctf USING (fragment_id, map_id);
+
+CREATE VIEW maps.combined_atc_markers AS
+SELECT
+    encode((am.marker_id::text || tn.map_id::text)::bytea, 'base64') as cam_id,
+    tn.map_id AS map_id,
+    am.marker_id,
+    tn.geom AS geom
+FROM maps.track_nodes tn
+JOIN track.atc_markers am USING (node_id);
+
+CREATE VIEW maps.auto_placed_electrical_connections AS
+SELECT
+    encode((ec.connection_id::text || tn.map_id::text)::bytea, 'base64') as apec_id,
+    tn.map_id AS map_id,
+    ec.connection_id,
+    tn.geom AS geom
+FROM maps.track_nodes tn
+JOIN track.electrical_connections ec USING (node_id);

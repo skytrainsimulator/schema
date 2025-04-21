@@ -151,6 +151,7 @@ CREATE TABLE track.substation_sources (
 
 CREATE TABLE track.electrical_connections (
     connection_id TEXT NOT NULL PRIMARY KEY,
+    node_id UUID REFERENCES track.track_nodes (node_id),
     block_u UUID NOT NULL REFERENCES track.power_blocks (pb_id),
     block_v UUID NOT NULL REFERENCES track.power_blocks (pb_id),
     connection_type track.electrical_connection_type NOT NULL,

@@ -210,6 +210,17 @@ CREATE OR REPLACE FUNCTION maps.update_fragment_path_trigger() RETURNS TRIGGER A
     END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION maps.delete_fragment_path_trigger() RETURNS TRIGGER AS $$
+    BEGIN
+        DELETE FROM maps.track_fragments tf WHERE tf.fragment_id = OLD.fragment_id;
+        RETURN OLD;
+    END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE TRIGGER update_fragment_path
     INSTEAD OF UPDATE ON maps.combined_track_fragments
     FOR EACH ROW EXECUTE PROCEDURE maps.update_fragment_path_trigger();
+
+CREATE OR REPLACE TRIGGER delete_fragment_path
+    INSTEAD OF DELETE ON maps.combined_track_fragments
+    FOR EACH ROW EXECUTE PROCEDURE maps.delete_fragment_path_trigger();

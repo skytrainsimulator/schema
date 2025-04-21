@@ -19,6 +19,11 @@ Most tables contained in this database schema have column `notes TEXT DEFAULT NU
 about the entity, and is only intended for human consumption. This column is not noted in table documentation in this Readme.
 
 - - -
+## Directory `georef-osm`
+This directory contains tooling to assist with "georeferencing" traced technical drawings with actual geographic features 
+using [OpenStreetMap](https://www.openstreetmap.org/) data. For more information, see the [directory's Readme](georef-osm/Readme.md).
+
+- - -
 
 ## Schema `track`
 ### Color
@@ -328,6 +333,7 @@ substation building.
 | Field                     | Type                                                  | Description                                                                 |
 |---------------------------|-------------------------------------------------------|-----------------------------------------------------------------------------|
 | `connection_id`           | `TEXT NOT NULL PRIMARY KEY`                           | The ID of the electrical connection                                         |
+| `node_id`                 | `UUID REFERENCES track.track_nodes (node_id)`         | Optional ID of the node this connection splits between                      |
 | `block_u`                 | `UUID NOT NULL REFERENCES track.power_blocks (pb_id)` | One connected power block. Typically on the `0` side                        |
 | `block_v`                 | `UUID NOT NULL REFERENCES track.power_blocks (pb_id)` | One connected power block. Typically on the `1` side                        |
 | `connection_type`         | `track.electrical_connection_type NOT NULL`           | The type of the electrical connection                                       |
@@ -622,6 +628,43 @@ given map will be present.
 | `switch_display` | `TEXT NOT NULL`                                            | `<switch_type>-<switch_id>` |
 | `color`          | `TEXT NOT NULL`                                            | Switch RGB color            |
 | `geom`           | `geometry(POINT) NOT NULL`                                 | Switch Point                |
+
+### View `maps.combined_reentry_points`
+Calculates a `POINT` position for reentry points from the `maps.track_nodes` entry for the reentry point node. Only 
+reentry points with both its node present in `maps.track_nodes` and it's fragment present in `maps.track_fragments` 
+for the given map will be present.
+
+| Field        | Type                                                            | Description                                                           |
+|--------------|-----------------------------------------------------------------|-----------------------------------------------------------------------|
+| `crp_id`     | `TEXT NOT NULL` "`UNIQUE`"                                      | qGIS ID                                                               |
+| `map_id`     | `TEXT NOT NULL` "`REFERENCES maps.maps (map_id)`"               | Map ID                                                                |
+| `node_id`    | `UUID NOT NULL` "`REFERENCES track.track_nodes (node_id)`"      | Reentry point node ID                                                 |
+| `reentry_id` | `INT NOT NULL` "`REFERENCES track.reentry_points (reentry_id)`" | Reentry point ID                                                      |
+| `geom`       | `geometry(POINT) NOT NULL`                                      | Reentry Point                                                         |
+| `rotation`   | `DOUBLE PERCISION`                                              | The rotation of the reentry point to aim (roughly) along the fragment |
+
+### View `maps.combined_atc_markers`
+Calculates a `POINT` position for ATC markers from the `maps.track_nodes` entry for the ATC marker node. Only 
+ATC markers with its node present in `maps.track_nodes` for the given map will be present.
+
+| Field       | Type                                                         | Description   |
+|-------------|--------------------------------------------------------------|---------------|
+| `cam_id`    | `TEXT NOT NULL` "`UNIQUE`"                                   | qGIS ID       |
+| `map_id`    | `TEXT NOT NULL` "`REFERENCES maps.maps (map_id)`"            | Map ID        |
+| `marker_id` | `TEXT NOT NULL` "`REFERENCES track.atc_markers (marker_id)`" | ATC Marker ID |
+| `geom`      | `geometry(POINT) NOT NULL`                                   | Switch Point  |
+
+### View `maps.auto_placed_electrical_connections`
+Calculates a `POINT` position for electrical connections from the `maps.track_nodes` entry for electrical connections 
+with a specified `node_id`. Only electrical connections with its node present in `maps.track_nodes` for the given map 
+will be present.
+
+| Field           | Type                                                                        | Description              |
+|-----------------|-----------------------------------------------------------------------------|--------------------------|
+| `apec_id`       | `TEXT NOT NULL` "`UNIQUE`"                                                  | qGIS ID                  |
+| `map_id`        | `TEXT NOT NULL` "`REFERENCES maps.maps (map_id)`"                           | Map ID                   |
+| `connection_id` | `TEXT NOT NULL` "`REFERENCES track.electrical_connections (connection_id)`" | Electrical connection ID |
+| `geom`          | `geometry(POINT) NOT NULL`                                                  | Switch Point             |
 
 - - -
 ## File `createPublishExport.sql`

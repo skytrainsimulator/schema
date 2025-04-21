@@ -1,0 +1,24 @@
+[out:json][timeout:25];
+(
+  // Millennium Line
+  rel(id:5881419);
+  // Expo Line
+  rel(id:5881298);
+  // Canada Line
+  rel(id:5881439);
+
+  // TCP is currently excluded due to construction 2024 - 20??
+  way(id:379690502);
+  // These 2 VMS3 tracks are marked as railway=construction
+  way(id:923573483);
+  way(id:923573482);
+  way(id:486669267);
+  way(id:486669265);
+  // Grinder pit track is marked as railway=abandoned
+  way(id:923573484);
+  way(id:995776590);
+
+  nwr["railway"="subway"](49.124668601968196,-123.21029663085939,49.30050157036354,-122.78491973876955);
+);
+(._;>>;);
+out geom meta;
