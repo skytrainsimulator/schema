@@ -111,3 +111,29 @@ SELECT * FROM maps.reentry_points ORDER BY map_id, reentry_id;
 
 SELECT * FROM maps.atc_markers ORDER BY map_id, marker_id;
 \g maps/atc_markers.csv
+
+
+
+SELECT * FROM georef.map_scale_groups ORDER BY scale_key;
+\g georef/map_scale_groups.csv
+
+SELECT * FROM georef.loops_linked_nodes ORDER BY track_node, osm_node;
+\g georef/loops_linked_nodes.csv
+
+SELECT * FROM georef.georef_nodes ORDER BY track_node, osm_node;
+\g georef/georef_nodes.csv
+
+SELECT * FROM georef.intersection_lines ORDER BY intersection_line_id;
+\g georef/intersection_lines.csv
+
+SELECT * FROM georef.intersection_cross_node_pairs ORDER BY intersection_line_id, node_pair_id;
+\g georef/intersection_cross_node_pairs.csv
+
+SELECT * FROM georef.closest_point ORDER BY osm_node, node_pair_id;
+\g georef/closest_point.csv
+
+SELECT * FROM georef.force_auto_node_percentage_map_source ORDER BY fragment_id;
+\g georef/force_auto_node_percentage_map_source.csv
+
+SELECT * FROM georef.force_fragment_trace_length ORDER BY fragment_id;
+\g georef/force_fragment_trace_length.csv
