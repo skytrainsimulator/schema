@@ -22,6 +22,7 @@
 
 \pset format csv
 \pset null 'NULL'
+\pset pager off
 
 SELECT * FROM track.stations ORDER BY station_id;
 \g track/stations.csv
